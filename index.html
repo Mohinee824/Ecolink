@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECOLINK — Air Quality Module | Bhopal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <link rel="stylesheet" href="script.css">
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tlogo">ECOLINK</div>
+    <div class="tsep">|</div>
+    <div class="tmod">MODULE 1 — AIR QUALITY</div>
+    <div class="tsep">|</div>
+    <div class="tloc">📍 BHOPAL, MADHYA PRADESH</div>
+    <div class="tright">
+      <div class="tsrc" id="dsrc">Loading dataset...</div>
+      <div class="tpill"><div class="tdot"></div>TINKERKIT LIVE</div>
+      <div class="tclock" id="clock">--:--:--</div>
+    </div>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker-bar">
+    <div class="ticker-track" id="ticker"></div>
+  </div>
+
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sb">
+      <button class="sb-btn" onclick="toggleSB()"><span></span><span></span><span></span></button>
+      <div class="ni act" onclick="nav('dashboard',this)"><span class="ni-ico">⬡</span><span class="ni-lbl">Dashboard</span></div>
+      <div class="ni" onclick="nav('calc',this)"><span class="ni-ico">🧮</span><span class="ni-lbl">CO₂ Calculator</span></div>
+      <div class="ni" onclick="nav('history',this)"><span class="ni-ico">📊</span><span class="ni-lbl">Year History</span></div>
+      <div class="ni" onclick="nav('ml',this)"><span class="ni-ico">🤖</span><span class="ni-lbl">ML Forecast</span></div>
+      <div class="ni" onclick="nav('iot',this)"><span class="ni-ico">📡</span><span class="ni-lbl">IoT Sensors</span></div>
+      <div class="sb-div"></div>
+      <div class="sb-foot">
+        <div class="sb-eco"><div class="sb-eco-n">58</div><div class="sb-eco-l">AIR SCORE</div></div>
+      </div>
+    </aside>
+
+    <div class="content">
+        <!-- ══ DASHBOARD ══ -->
+        <div class="page act" id="page-dashboard">
+          <div class="ph">
+            <div>
+              <h1>Air Quality <em>Bhopal</em></h1>
+              <p>Real data from CPCB's 5 monitoring stations via Kaggle dataset (rohanrao/air-quality-data-in-india). TinkerKit sensors stream live pollutant readings.</p>
+            </div>
+            <div class="ph-r">
+              <div class="ph-kv">Today's AQI</div>
+              <div class="ph-val" style="color:#ff3d5a">138</div>
+              <div class="ph-src">CPCB · T T Nagar Station</div>
+            </div>
+          </div>
+        
+          <div class="bento-air">
+            <!-- AQI -->
+            <div class="card b-aqi" style="border-color:rgba(255,61,90,.2);cursor:pointer" onclick="nav('history',null)">
+              <div class="clabel">Overall AQI <span class="clabel-tag" style="background:rgba(255,61,90,.1);color:#ff3d5a;border:1px solid rgba(255,61,90,.2)">Poor</span></div>
+              <div class="sval" style="color:#ff3d5a">138</div>
+              <span class="sdelta d-r">↑ Unhealthy range</span>
+              <div class="ssrc">CPCB · Mar 2026</div>
+            </div>
+            <!-- PM2.5 -->
+            <div class="card b-pm" style="border-color:rgba(255,116,38,.15)">
+              <div class="clabel">PM2.5 <span class="clabel-tag" style="background:rgba(255,116,38,.1);color:#ff7426;border:1px solid rgba(255,116,38,.2)">5× WHO limit</span></div>
+              <div class="sval" style="color:#ff7426">54</div>
+              <div style="font-size:.72rem;color:var(--muted)">µg/m³</div>
+              <span class="sdelta d-r">Target: ≤10 µg/m³</span>
+            </div>
+            <!-- TREND CHART (tall, spans 2 rows) -->
+            <div class="card b-trend">
+              <div class="clabel">Monthly AQI Trend — Bhopal 2019–2024 <span class="clabel-tag" style="background:rgba(0,255,136,.08);color:#00ff88;border:1px solid rgba(0,255,136,.15)">CPCB Dataset</span></div>
+              <div style="position:relative;height:calc(100% - 32px)"><canvas id="trendChart"></canvas></div>
+            </div>
+            <!-- NO2 -->
+            <div class="card b-no2">
+              <div class="clabel">NO₂ Level</div>
+              <div class="sval" style="color:#ffd000;font-size:2rem">31</div>
+              <div style="font-size:.68rem;color:var(--muted)">µg/m³ · Moderate</div>
+              <span class="sdelta d-y">NAAQS limit: 80</span>
+            </div>
+            <!-- SO2 -->
+            <div class="card b-so2">
+              <div class="clabel">SO₂ Level</div>
+              <div class="sval" style="color:#00ff88;font-size:2rem">4</div>
+              <div style="font-size:.68rem;color:var(--muted)">µg/m³ · Good</div>
+              <span class="sdelta d-g">Well within limit</span>
+            </div>
+            <!-- SOURCES PIE -->
+            <div class="card b-sources">
+              <div class="clabel">Bhopal Pollution Sources <span class="clabel-tag" style="background:rgba(64,128,255,.1);color:#4080ff;border:1px solid rgba(64,128,255,.2)">UrbanEmissions.info</span></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;height:calc(100% - 32px)">
+                <div style="position:relative;display:flex;align-items:center;justify-content:center"><canvas id="srcPie" style="max-height:150px"></canvas></div>
+                <div style="display:flex;flex-direction:column;justify-content:center;gap:.4rem">
+                  <div style="display:flex;align-items:center;gap:.5rem;font-size:.76rem"><span style="width:8px;height:8px;border-radius:50%;background:#ff3d5a;flex-shrink:0"></span>Transport & Road Dust<span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#ff3d5a;font-weight:700">42%</span></div>
+                  <div style="display:flex;align-items:center;gap:.5rem;font-size:.76rem"><span style="width:8px;height:8px;border-radius:50%;background:#ff7426;flex-shrink:0"></span>Domestic Cooking/Heating<span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#ff7426;font-weight:700">22%</span></div>
+                  <div style="display:flex;align-items:center;gap:.5rem;font-size:.76rem"><span style="width:8px;height:8px;border-radius:50%;background:#ffd000;flex-shrink:0"></span>Open Waste Burning<span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#ffd000;font-weight:700">18%</span></div>
+                  <div style="display:flex;align-items:center;gap:.5rem;font-size:.76rem"><span style="width:8px;height:8px;border-radius:50%;background:#4080ff;flex-shrink:0"></span>Industry / Brick Kilns<span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#4080ff;font-weight:700">12%</span></div>
+                  <div style="display:flex;align-items:center;gap:.5rem;font-size:.76rem"><span style="width:8px;height:8px;border-radius:50%;background:#00ffcc;flex-shrink:0"></span>Regional / Transboundary<span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#00ffcc;font-weight:700">6%</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- CALC QUICK (in bento) -->
+            <div class="card b-calc" style="cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;border:1px dashed rgba(0,255,204,.15);background:linear-gradient(135deg,rgba(0,255,204,.03),transparent)" onclick="nav('calc',null)">
+              <div style="font-size:2.5rem;margin-bottom:.5rem">🧮</div>
+              <div style="font-size:1rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:.3rem">Carbon Calculator</div>
+              <div style="font-size:.78rem;color:var(--muted);text-align:center;line-height:1.5;max-width:200px">Enter your electricity, fuel & industry data to get your CO₂ footprint</div>
+              <div style="margin-top:.75rem;background:var(--gt);color:#06080f;padding:6px 18px;border-radius:6px;font-size:.78rem;font-weight:800">Open Calculator →</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ══ CO₂ CALCULATOR ══ -->
+        <div class="page" id="page-calc">
+          <div class="ph">
+            <div>
+              <h1>CO₂ Emission <em>Calculator</em></h1>
+              <p>Calculates annual carbon footprint from electricity, vehicle fuel, and industry. Formula: CO₂ = Activity × Emission Factor (IPCC standards).</p>
+            </div>
+            <div class="ph-r">
+              <div class="ph-kv">India Grid Intensity</div>
+              <div class="ph-val" style="color:#ffd000">0.82</div>
+              <div class="ph-src">kg CO₂ per kWh</div>
+            </div>
+          </div>
+        
+          <div class="l-main">
+            <!-- MAIN FORM -->
+            <div style="display:flex;flex-direction:column;gap:.85rem">
+              <!-- Electricity -->
+              <div class="card">
+                <div class="clabel">⚡ Electricity Consumption</div>
+                <div class="fg3">
+                  <div class="fgrp"><label class="fl">Monthly kWh</label><input class="fi" type="number" id="e_kwh" value="350" min="0"></div>
+                  <div class="fgrp"><label class="fl">Energy Source</label>
+                    <select class="fi" id="e_src">
+                      <option value="0.82">Grid (Coal — India avg)</option>
+                      <option value="0.5">Mixed Grid (partial renewable)</option>
+                      <option value="0.05">Solar / Renewable</option>
+                    </select>
+                  </div>
+                  <div class="fgrp"><label class="fl">No. of Months</label><input class="fi" type="number" id="e_months" value="12" min="1" max="12"></div>
+                </div>
+              </div>
+              <!-- Vehicle -->
+              <div class="card">
+                <div class="clabel">🚗 Vehicle & Transport</div>
+                <div class="fg3">
+                  <div class="fgrp"><label class="fl">Distance km/month</label><input class="fi" type="number" id="v_dist" value="800" min="0"></div>
+                  <div class="fgrp"><label class="fl">Fuel Type</label>
+                    <select class="fi" id="v_type">
+                      <option value="0.21">Petrol Car (0.21 kg/km)</option>
+                      <option value="0.17">Diesel Car (0.17 kg/km)</option>
+                      <option value="0.14">2-Wheeler Petrol</option>
+                      <option value="0.089">Public Bus (0.089 kg/km)</option>
+                      <option value="0.04">Train (0.04 kg/km)</option>
+                      <option value="0">Electric Vehicle (zero)</option>
+                    </select>
+                  </div>
+                  <div class="fgrp"><label class="fl">No. of Vehicles</label><input class="fi" type="number" id="v_count" value="1" min="0"></div>
+                </div>
+              </div>
+              <!-- Industry -->
+              <div class="card">
+                <div class="clabel">🏭 Industry / Other Emissions</div>
+                <div class="fg3">
+                  <div class="fgrp"><label class="fl">LPG Cylinders/year</label><input class="fi" type="number" id="i_lpg" value="8" min="0"></div>
+                  <div class="fgrp"><label class="fl">Coal (kg/month)</label><input class="fi" type="number" id="i_coal" value="0" min="0"></div>
+                  <div class="fgrp"><label class="fl">Waste (kg/month)</label><input class="fi" type="number" id="i_waste" value="30" min="0"></div>
+                </div>
+              </div>
+              <button class="cbtn" onclick="calcCO2()">CALCULATE ANNUAL CO₂ FOOTPRINT →</button>
+            </div>
+        
+            <!-- RESULT PANEL -->
+            <div style="display:flex;flex-direction:column;gap:.85rem">
+              <div class="card">
+                <div class="clabel">Result</div>
+                <div class="res vis" id="calcResult" style="border-color:rgba(0,255,204,.18)">
+                  <div class="rmono">Annual CO₂ Footprint</div>
+                  <div class="rval" id="totalCO2">—</div>
+                  <div class="rdesc" id="co2Grade"></div>
+                  <div class="rbars" id="co2Bars"></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="clabel">Footprint Comparison Chart</div>
+                <div style="position:relative;height:160px"><canvas id="compChart"></canvas></div>
+              </div>
+              <div class="card">
+                <div class="clabel">Year-wise CO₂ Projection</div>
+                <div style="position:relative;height:130px"><canvas id="projChart"></canvas></div>
+              </div>
+            </div>
+          </div>
+        
+          <!-- RECOMMENDATIONS -->
+          <div class="card">
+            <div class="clabel">📋 Personalised Recommendations</div>
+            <div class="l-3" style="margin-bottom:0">
+              <div>
+                <div class="rec" style="border-color:rgba(0,255,136,.12)"><div class="rec-ico">🚇</div><div class="rec-body"><strong>Switch to Public Transit</strong><span>Bhopal's BRTS & city buses can cut personal transport emissions by 50–70%. Monthly savings: ~134 kg CO₂.</span></div><div class="rec-pct" style="color:#00ff88">−65%</div></div>
+                <div class="rec" style="border-color:rgba(0,255,136,.12)"><div class="rec-ico">🛵</div><div class="rec-body"><strong>EV Two-Wheeler</strong><span>Replace petrol 2-wheeler with electric — zero tailpipe, low grid emission in MP.</span></div><div class="rec-pct" style="color:#00ff88">−40%</div></div>
+              </div>
+              <div>
+                <div class="rec" style="border-color:rgba(255,208,0,.12)"><div class="rec-ico">☀️</div><div class="rec-body"><strong>Rooftop Solar (3 kW)</strong><span>Average MP household saves ~3,000 kWh/year — eliminates electricity emissions entirely.</span></div><div class="rec-pct" style="color:#ffd000">−35%</div></div>
+                <div class="rec" style="border-color:rgba(255,208,0,.12)"><div class="rec-ico">💡</div><div class="rec-body"><strong>LED + Smart Appliances</strong><span>Replace CFL/incandescent with 5-star BEE-rated appliances and LED lighting.</span></div><div class="rec-pct" style="color:#ffd000">−15%</div></div>
+              </div>
+              <div>
+                <div class="rec" style="border-color:rgba(64,128,255,.12)"><div class="rec-ico">♻️</div><div class="rec-body"><strong>Composting & Recycling</strong><span>Reduces landfill methane from organic waste. Bhopal generates 1,100 TPD municipal waste.</span></div><div class="rec-pct" style="color:#4080ff">−8%</div></div>
+                <div class="rec" style="border-color:rgba(64,128,255,.12)"><div class="rec-ico">🌳</div><div class="rec-body"><strong>Carbon Offset — Tree Planting</strong><span>1 tree offsets ~22 kg CO₂/year. Plant 10 trees to offset ~220 kg annually.</span></div><div class="rec-pct" style="color:#4080ff">offset</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ══ YEAR HISTORY ══ -->
+        <div class="page" id="page-history">
+          <div class="ph">
+            <div>
+              <h1>AQI <em>Historical Data</em></h1>
+              <p>Bhopal annual AQI data 2015–2024 sourced from CPCB via Kaggle dataset. Pollutants: PM2.5, PM10, NO₂, SO₂, CO, O₃.</p>
+            </div>
+            <div class="ph-r">
+              <div class="ph-kv">Data Source</div>
+              <div class="ph-val" style="font-size:1rem;color:var(--teal)">CPCB / Kaggle</div>
+              <div class="ph-src">kaggle.com/rohanrao/air-quality-data-in-india</div>
+            </div>
+          </div>
+        
+          <div class="l-main" style="margin-bottom:.85rem">
+            <div class="card">
+              <div class="clabel">Annual Average AQI — Bhopal 2015–2024 <span class="clabel-tag" style="background:rgba(0,255,204,.08);color:#00ffcc;border:1px solid rgba(0,255,204,.15)">CPCB Data</span></div>
+              <div style="position:relative;height:220px"><canvas id="annualAQI"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="clabel">Year-by-Year AQI Comparison</div>
+              <!-- Custom bar chart using divs -->
+              <div class="ybar-wrap" id="ybarList"></div>
+            </div>
+          </div>
+        
+          <div class="l-3">
+            <div class="card">
+              <div class="clabel">Pollutant Breakdown 2024 <span class="clabel-tag" style="background:rgba(64,128,255,.1);color:#4080ff;border:1px solid rgba(64,128,255,.2)">µg/m³ annual avg</span></div>
+              <div style="position:relative;height:200px"><canvas id="pollutantChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="clabel">Seasonal AQI Pattern (Bhopal)</div>
+              <div style="position:relative;height:200px"><canvas id="seasonChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="clabel">AQI Category Distribution 2015–2024</div>
+              <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center"><canvas id="catPie" style="max-height:180px"></canvas></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ══ ML FORECAST ══ -->
+        <div class="page" id="page-ml">
+          <div class="ph">
+            <div>
+              <h1>ML / Deep Learning <em>Forecast</em></h1>
+              <p>LSTM-based deep learning model trained on Bhopal CPCB data predicts 7-day AQI. Features: PM2.5, PM10, NO₂, SO₂, temperature, wind speed.</p>
+            </div>
+            <div class="ph-r">
+              <div class="ph-kv">Model Accuracy</div>
+              <div class="ph-val" style="color:#00ff88">89.4%</div>
+              <div class="ph-src">LSTM · R² = 0.894</div>
+            </div>
+          </div>
+        
+          <!-- 7-day forecast cards -->
+          <div class="card" style="margin-bottom:.85rem">
+            <div class="ml-header">
+              <div class="clabel" style="margin-bottom:0">7-Day AQI Forecast</div>
+              <div class="ml-badge ml-blue">LSTM Deep Learning</div>
+              <div class="ml-badge ml-teal">Trained: CPCB Bhopal 2015–2024</div>
+            </div>
+            <div class="forecast-row" id="forecastCards"></div>
+          </div>
+        
+          <div class="l-main">
+            <div class="card">
+              <div class="clabel">Actual vs Predicted AQI — Validation Set</div>
+              <div style="position:relative;height:220px"><canvas id="mlChart"></canvas></div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.75rem">
+                <div style="background:rgba(255,255,255,.03);border:1px solid var(--cb);border-radius:8px;padding:.5rem;text-align:center">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);margin-bottom:.2rem">RMSE</div>
+                  <div style="font-size:1.1rem;font-weight:800;color:#4080ff">12.4</div>
+                </div>
+                <div style="background:rgba(255,255,255,.03);border:1px solid var(--cb);border-radius:8px;padding:.5rem;text-align:center">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);margin-bottom:.2rem">MAE</div>
+                  <div style="font-size:1.1rem;font-weight:800;color:#00ffcc">9.7</div>
+                </div>
+                <div style="background:rgba(255,255,255,.03);border:1px solid var(--cb);border-radius:8px;padding:.5rem;text-align:center">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);margin-bottom:.2rem">R²</div>
+                  <div style="font-size:1.1rem;font-weight:800;color:#00ff88">0.894</div>
+                </div>
+                <div style="background:rgba(255,255,255,.03);border:1px solid var(--cb);border-radius:8px;padding:.5rem;text-align:center">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);margin-bottom:.2rem">MAPE</div>
+                  <div style="font-size:1.1rem;font-weight:800;color:#ffd000">10.6%</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.85rem">
+              <div class="card">
+                <div class="clabel">Model Architecture</div>
+                <div style="display:flex;flex-direction:column;gap:.4rem;font-size:.78rem">
+                  <div style="display:flex;justify-content:space-between;padding:.35rem .5rem;background:rgba(64,128,255,.07);border-radius:6px;border:1px solid rgba(64,128,255,.12)"><span style="color:var(--muted)">Model Type</span><span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#4080ff;font-weight:700">LSTM (2-layer)</span></div>
+                  <div style="display:flex;justify-content:space-between;padding:.35rem .5rem;background:rgba(255,255,255,.02);border-radius:6px"><span style="color:var(--muted)">Input Features</span><span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--white)">PM2.5, PM10, NO₂, SO₂, CO, Temp, Wind</span></div>
+                  <div style="display:flex;justify-content:space-between;padding:.35rem .5rem;background:rgba(255,255,255,.02);border-radius:6px"><span style="color:var(--muted)">Sequence Length</span><span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--white)">7 days lookback</span></div>
+                  <div style="display:flex;justify-content:space-between;padding:.35rem .5rem;background:rgba(255,255,255,.02);border-radius:6px"><span style="color:var(--muted)">Training Data</span><span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--white)">CPCB Bhopal 2015–2022</span></div>
+                  <div style="display:flex;justify-content:space-between;padding:.35rem .5rem;background:rgba(255,255,255,.02);border-radius:6px"><span style="color:var(--muted)">Validation</span><span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--white)">CPCB Bhopal 2023–2024</span></div>
+                  <div style="display:flex;justify-content:space-between;padding:.35rem .5rem;background:rgba(255,255,255,.02);border-radius:6px"><span style="color:var(--muted)">Framework</span><span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--white)">Python · TensorFlow / Keras</span></div>
+                  <div style="display:flex;justify-content:space-between;padding:.35rem .5rem;background:rgba(255,255,255,.02);border-radius:6px"><span style="color:var(--muted)">Optimizer</span><span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--white)">Adam · lr=0.001</span></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="clabel">Feature Importance</div>
+                <div style="display:flex;flex-direction:column;gap:.35rem">
+                  <div style="display:flex;align-items:center;gap:.5rem;font-size:.72rem"><span style="width:55px;color:var(--muted);font-size:.62rem;font-family:'JetBrains Mono',monospace">PM2.5</span><div style="flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden"><div style="width:88%;height:100%;background:#ff3d5a;border-radius:3px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#ff3d5a;font-weight:700;width:28px;text-align:right">88%</span></div>
+                  <div style="display:flex;align-items:center;gap:.5rem;font-size:.72rem"><span style="width:55px;color:var(--muted);font-size:.62rem;font-family:'JetBrains Mono',monospace">PM10</span><div style="flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden"><div style="width:76%;height:100%;background:#ff7426;border-radius:3px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#ff7426;font-weight:700;width:28px;text-align:right">76%</span></div>
+                  <div style="display:flex;align-items:center;gap:.5rem;font-size:.72rem"><span style="width:55px;color:var(--muted);font-size:.62rem;font-family:'JetBrains Mono',monospace">NO₂</span><div style="flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden"><div style="width:54%;height:100%;background:#ffd000;border-radius:3px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#ffd000;font-weight:700;width:28px;text-align:right">54%</span></div>
+                  <div style="display:flex;align-items:center;gap:.5rem;font-size:.72rem"><span style="width:55px;color:var(--muted);font-size:.62rem;font-family:'JetBrains Mono',monospace">Temp</span><div style="flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden"><div style="width:41%;height:100%;background:#4080ff;border-radius:3px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#4080ff;font-weight:700;width:28px;text-align:right">41%</span></div>
+                  <div style="display:flex;align-items:center;gap:.5rem;font-size:.72rem"><span style="width:55px;color:var(--muted);font-size:.62rem;font-family:'JetBrains Mono',monospace">Wind</span><div style="flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden"><div style="width:29%;height:100%;background:#00ffcc;border-radius:3px"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#00ffcc;font-weight:700;width:28px;text-align:right">29%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ══ IOT SENSORS ══ -->
+        <div class="page" id="page-iot">
+          <div class="ph">
+            <div>
+              <h1>TinkerKit <em>IoT Sensors</em></h1>
+              <p>Arduino UNO R3 with TinkerKit Shield monitoring 6 air quality parameters in real-time. Data feeds into the ML pipeline and dashboard.</p>
+            </div>
+            <div class="ph-r">
+              <div class="ph-kv">Sensors Online</div>
+              <div class="ph-val" style="color:#00ff88">6 / 6</div>
+              <div class="ph-src">Arduino UNO · TinkerKit Shield</div>
+            </div>
+          </div>
+        
+          <div class="l-3" style="margin-bottom:.85rem">
+            <div class="card" style="border-color:rgba(255,61,90,.2)">
+              <div class="clabel">T-Module / CO₂ Sensor <span class="clabel-tag" style="background:rgba(255,61,90,.1);color:#ff3d5a;border:1px solid rgba(255,61,90,.2)">HIGH</span></div>
+              <div style="font-size:2.2rem;font-weight:900;letter-spacing:-1.5px;color:#ff3d5a;line-height:1;margin:.3rem 0" id="iot-co2">412 ppm</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-bottom:.5rem">Safe limit: 400 ppm · Outdoor baseline</div>
+              <div class="tk-bar"><div class="tk-fill" style="width:82%;background:linear-gradient(90deg,#ffd000,#ff3d5a)" id="iot-co2-bar"></div></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--dim);margin-top:.4rem">TK-GAS · Pin A0 · 10Hz sample rate</div>
+            </div>
+            <div class="card" style="border-color:rgba(255,116,38,.2)">
+              <div class="clabel">T-Module / PM2.5 Sensor <span class="clabel-tag" style="background:rgba(255,116,38,.1);color:#ff7426;border:1px solid rgba(255,116,38,.2)">POOR</span></div>
+              <div style="font-size:2.2rem;font-weight:900;letter-spacing:-1.5px;color:#ff7426;line-height:1;margin:.3rem 0" id="iot-pm25">54 µg/m³</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-bottom:.5rem">WHO annual limit: 10 µg/m³ (5× exceeded)</div>
+              <div class="tk-bar"><div class="tk-fill" style="width:70%;background:linear-gradient(90deg,#ffd000,#ff7426)" id="iot-pm25-bar"></div></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--dim);margin-top:.4rem">TK-DUST · Pin A1 · Nova SDS011</div>
+            </div>
+            <div class="card">
+              <div class="clabel">T-Module / Temperature</div>
+              <div style="font-size:2.2rem;font-weight:900;letter-spacing:-1.5px;color:#ffd000;line-height:1;margin:.3rem 0" id="iot-temp">28.4°C</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-bottom:.5rem">Affects pollutant dispersion & ozone</div>
+              <div class="tk-bar"><div class="tk-fill" style="width:57%;background:#ffd000" id="iot-temp-bar"></div></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--dim);margin-top:.4rem">TK-THERMISTOR · Pin A2</div>
+            </div>
+            <div class="card">
+              <div class="clabel">T-Module / Humidity</div>
+              <div style="font-size:2.2rem;font-weight:900;letter-spacing:-1.5px;color:#4080ff;line-height:1;margin:.3rem 0" id="iot-hum">62%</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-bottom:.5rem">High humidity traps PM near ground</div>
+              <div class="tk-bar"><div class="tk-fill" style="width:62%;background:#4080ff" id="iot-hum-bar"></div></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--dim);margin-top:.4rem">TK-DHT22 · Pin D4</div>
+            </div>
+            <div class="card">
+              <div class="clabel">T-Module / NO₂ Sensor</div>
+              <div style="font-size:2.2rem;font-weight:900;letter-spacing:-1.5px;color:#ffd000;line-height:1;margin:.3rem 0" id="iot-no2">31 µg/m³</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-bottom:.5rem">NAAQS limit: 80 µg/m³</div>
+              <div class="tk-bar"><div class="tk-fill" style="width:39%;background:#ffd000" id="iot-no2-bar"></div></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--dim);margin-top:.4rem">TK-MQ135 · Pin A3 · NO₂ calibrated</div>
+            </div>
+            <div class="card">
+              <div class="clabel">T-Module / Wind Speed</div>
+              <div style="font-size:2.2rem;font-weight:900;letter-spacing:-1.5px;color:#00ffcc;line-height:1;margin:.3rem 0" id="iot-wind">8.2 km/h</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-bottom:.5rem">Low wind = pollutant accumulation</div>
+              <div class="tk-bar"><div class="tk-fill" style="width:22%;background:#00ffcc" id="iot-wind-bar"></div></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--dim);margin-top:.4rem">TK-ANEMOMETER · Pin D3 · Hall effect</div>
+            </div>
+          </div>
+        
+          <div class="l-2">
+            <div class="card">
+              <div class="clabel">Live Sensor Feed — Last 20 readings</div>
+              <div style="position:relative;height:180px"><canvas id="liveChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="clabel">IoT → ML Pipeline</div>
+              <div style="display:flex;flex-direction:column;gap:.45rem;font-size:.78rem">
+                <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:rgba(255,116,38,.07);border:1px solid rgba(255,116,38,.15);border-radius:7px"><span>📡</span><span>TinkerKit sensors sample at 10Hz via Arduino UNO R3</span></div>
+                <div style="display:flex;align-items:center;gap:4px;padding:0 .6rem;color:var(--dim)">↓ Serial USB / MQTT over WiFi</div>
+                <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:rgba(0,255,204,.06);border:1px solid rgba(0,255,204,.12);border-radius:7px"><span>🐍</span><span>Python Flask backend receives, cleans and stores to MySQL</span></div>
+                <div style="display:flex;align-items:center;gap:4px;padding:0 .6rem;color:var(--dim)">↓ Feature engineering + normalisation</div>
+                <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:rgba(64,128,255,.08);border:1px solid rgba(64,128,255,.15);border-radius:7px"><span>🤖</span><span>LSTM model (TensorFlow/Keras) ingests 7-day sequences for AQI prediction</span></div>
+                <div style="display:flex;align-items:center;gap:4px;padding:0 .6rem;color:var(--dim)">↓ REST API response (JSON)</div>
+                <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:rgba(45,255,158,.06);border:1px solid rgba(45,255,158,.12);border-radius:7px"><span>📊</span><span>Dashboard renders forecast + live readings in real-time</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
