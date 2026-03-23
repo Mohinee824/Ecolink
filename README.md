@@ -13,12 +13,9 @@ ECOLINK is a modular environmental monitoring application designed to track, ana
 - **Pollution Sources Analysis:** Breakdown of contributions from transport, domestic cooking, and other urban sources.
 
 ---
-## 📊 Data Sources
+## 📊 Data Source
 Central Pollution Control Board (CPCB)
 Kaggle Dataset: Air Quality Data in India (2015–2020) (kaggle.com) ⁠*Kaggle — India Air Quality Data (CPCB)*: https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india
-
-UrbanEmissions.info ⁠*UrbanEmissions.info — Bhopal*: https://urbanemissions.info/india-air-quality/india-city-air-quality/?city=Bhopal
-
 
 ## 🚀 Getting Started
 
