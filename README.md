@@ -31,11 +31,11 @@ markdown
 Compile the program:
 
    ```bash
-   javac CarbonCalculator.java
+   javac CarbonCalculator.java ```
 Run the program:
 
    ```bash
-   java CarbonCalculator
+   java CarbonCalculator ```
 Example output:
 
    ```Code
@@ -45,7 +45,7 @@ Example output:
    Enter waste generated (kg): 20
 
    Estimated Carbon Footprint: 1586.5 kg CO2
-   Moderate Environmental Impact ⚠️
+   Moderate Environmental Impact ⚠️```
 End
 
 ---
