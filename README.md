@@ -36,7 +36,6 @@ Run the program:
 
    ```bash
    java CarbonCalculator
-
 Example output:
 
    ```Code
@@ -47,7 +46,7 @@ Example output:
 
    Estimated Carbon Footprint: 1586.5 kg CO2
    Moderate Environmental Impact ⚠️
-
+End
 
 ---
 ## 📊 Data Source
