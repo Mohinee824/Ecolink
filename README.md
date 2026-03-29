@@ -30,15 +30,16 @@ markdown
    cd java_module
 Compile the program:
 
-bash
+```bash
 javac CarbonCalculator.java
 Run the program:
 
-bash
+```bash
 java CarbonCalculator
+
 Example output:
 
-Code
+```Code
 === EcoLink Carbon Footprint Calculator ===
 Enter electricity usage (kWh): 450
 Enter fuel consumption (litres): 50
