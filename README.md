@@ -12,6 +12,16 @@ ECOLINK is a modular environmental monitoring application designed to track, ana
 - **IoT Integration:** Stream pollutant readings from TinkerKit sensors in real time.
 - **Pollution Sources Analysis:** Breakdown of contributions from transport, domestic cooking, and other urban sources.
 
+## Java Integration
+
+This project also includes a Java-based Carbon Footprint Calculator module. 
+It demonstrates object-oriented programming, user input handling, and environmental impact analysis.
+
+Technologies Used:
+- HTML, CSS, JavaScript (Frontend)
+- Python (Backend)
+- Java (Carbon footprint calculation module)
+  
 ---
 ## 📊 Data Source
 Central Pollution Control Board (CPCB)
