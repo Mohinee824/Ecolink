@@ -50,9 +50,9 @@ Technologies Used:
    Estimated Carbon Footprint: 1586.5 kg CO2
    Moderate Environmental Impact ⚠️
    ```
-```
 
 ---
+
 ## 📊 Data Source
 Central Pollution Control Board (CPCB)
 Kaggle Dataset: Air Quality Data in India (2015–2020) (kaggle.com) ⁠*Kaggle — India Air Quality Data (CPCB)*: https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india
