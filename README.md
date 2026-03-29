@@ -21,7 +21,33 @@ Technologies Used:
 - HTML, CSS, JavaScript (Frontend)
 - Python (Backend)
 - Java (Carbon footprint calculation module)
-  
+
+markdown
+### Running the Java Carbon Calculator
+
+1. Navigate to the Java module directory:
+   ```bash
+   cd java_module
+Compile the program:
+
+bash
+javac CarbonCalculator.java
+Run the program:
+
+bash
+java CarbonCalculator
+Example output:
+
+Code
+=== EcoLink Carbon Footprint Calculator ===
+Enter electricity usage (kWh): 450
+Enter fuel consumption (litres): 50
+Enter waste generated (kg): 20
+
+Estimated Carbon Footprint: 1586.5 kg CO2
+Moderate Environmental Impact ⚠️
+
+
 ---
 ## 📊 Data Source
 Central Pollution Control Board (CPCB)
