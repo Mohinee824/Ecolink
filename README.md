@@ -1,6 +1,6 @@
 # 🌱 ECOLINK — Air Quality Module (Bhopal)
 
-ECOLINK is a modular environmental monitoring application designed to track, analyze, and forecast air quality in Bhopal, Madhya Pradesh. It integrates real‑time IoT sensor feeds with historical datasets to provide actionable insights into pollution levels and their sources.
+ECOLINK is a modular environmental monitoring application designed to track, analyze, and forecast air quality in Bhopal, Madhya Pradesh. It feeds historical datasets to provide actionable insights into pollution levels and their sources.
 
 ---
 
@@ -9,7 +9,6 @@ ECOLINK is a modular environmental monitoring application designed to track, ana
 - **CO₂ Calculator:** Estimate individual carbon footprints and compare against sustainable targets.
 - **Yearly History:** Visualize long‑term air quality trends using CPCB datasets (2019–2024).
 - **ML Forecast:** Predict future AQI levels with machine learning models.
-- **IoT Integration:** Stream pollutant readings from TinkerKit sensors in real time.
 - **Pollution Sources Analysis:** Breakdown of contributions from transport, domestic cooking, and other urban sources.
 
 ---
